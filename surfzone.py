@@ -6,19 +6,19 @@ import numpy as np
 
 
 
-#functio nfor variance 
+#function for variance 
 def variance(data):
     '''Function used to calculate the variance of a dataset
     
     Input: 
     data = the data to calculate the variance of'''
-    # Number of observations
+    #number of observations
     n = len(data)
-    # Mean of the data
+    #mean of the data
     mean = sum(data) / n
-    # Square deviations
+    #square deviations
     deviations = [(x - mean) ** 2 for x in data]
-     # Variance
+     #variance
     variance = sum(deviations) / n
     return variance
 
@@ -38,7 +38,7 @@ def nb2(df, species):
     expr = """MaxN ~ Tide_height_ft + Wind_Average_mph + Salinity_PPT + Depth_ft + Visibility_ft + 
     Temp_C + Breaker_Height_m + Breaker_Period_s"""
     
-    #Using glm from statsmodel.formula, run Poisson regression on data
+    #using glm from statsmodel.formula, run Poisson regression on data
     poisson_training_results = smf.glm(formula=expr, data=df, family=sm.families.Poisson()).fit()
     
     #create new column for lambda values
@@ -51,19 +51,18 @@ def nb2(df, species):
     #create an expression for model specification for the OLSR
     ols_expr = """AUX_OLS_DEP ~ MaxN_LAMBDA - 1"""
 
-    #Configure and fit the ordinary least squared regression model
+    #configure and fit the ordinary least squared regression model
     aux_olsr_results = smf.ols(ols_expr, df).fit()
         
-    #Using GLM from statsmodel.formula and results from OLSR , run the negative binomial regression on data
-    nb2_training_results = smf.glm(formula=expr, data=df,
-                                   family=sm.families.NegativeBinomial(alpha=aux_olsr_results.params[0])).fit()
+    #using GLM from statsmodel.formula and results from OLSR, run the negative binomial regression on data
+    nb2_training_results = smf.glm(formula=expr, data=df,                        family=sm.families.NegativeBinomial(alpha=aux_olsr_results.params[0])).fit()
     
     #return negative binomial regression model summary
     return nb2_training_results.summary()
 
 #create function for zero-inflated poisson model
 def zero_poisson(df, species):
-    '''Function to run a zero-inflated poisson model
+    '''Function to run a zero-inflated Poisson model
     
     Inputs:
     df = data table with the data for the model
